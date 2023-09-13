@@ -50,6 +50,12 @@ jobs:
               sleep 5
               curl -I http://localhost:4173
 
+      - name: Generate Snapshot
+        run: docker run -i --init --cap-add=SYS_ADMIN --network host -v ./gen:/home/pptruser/gen ghcr.io/puppeteer/puppeteer:latest node -e "$(cat snapshot.js)" http://localhost:4173 ./gen
+
+      - name: Move gen folder to static folder
+        run: mv gen static/
+
       # - name: Notify
       #   if: failure()
       #   run: echo fail
@@ -82,12 +88,6 @@ jobs:
 
       - name: Install dependencies
         run: pnpm install
-
-      - name: Generate Snapshot
-        run: docker run -i --init --cap-add=SYS_ADMIN --network host -v ./gen:/home/pptruser/gen ghcr.io/puppeteer/puppeteer:latest node -e "$(cat snapshot.js)" http://localhost:4173 ./gen
-
-      - name: Move gen folder to static folder
-        run: mv gen static/
 
       - name: Install Vercel CLI
         run: npm install --global vercel@latest
